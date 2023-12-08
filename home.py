@@ -11,7 +11,7 @@ root.minsize(1920,1280)
 root.maxsize(1920,1280)
 root.title("College Management")
 
-mydb = mysql.connector.connect(host="localhost",user="root",password="password",database="homedb")
+mydb = mysql.connector.connect(host="localhost",user="root",password="password",database="projectdb")
 
 mycursor = mydb.cursor() 
 
@@ -191,16 +191,20 @@ def regwindow():
     regwindow.bind('<Return>',lambda event: [regdetails()] )  
     def regdetails():
         #print(f"Name is : {namevalue.get()} , Username is : {uservalue.get()} , Password is : {passvalue.get()}")
-        namevalue = nameentry.get()
-        uservalue = userentry.get()
-        passvalue = passentry.get()
         
-        if(namevalue=="" or uservalue=="" or passvalue==""):
+        rollvalue = rollentry.get()
+        namevalue = nameentry.get()
+        agevalue = ageentry.get()
+        gendervalue = genderentry.get()
+        mailvalue = mailentry.get()
+        contactvalue = contactentry.get()
+        
+        if(namevalue=="" or rollvalue=="" or gendervalue=="" or agevalue=="" or mailvalue=="" or contactvalue==""):
             tmsg.showinfo("Insert Status","All Field are Required to be filled")
         else:
 
-            sql = "insert into hometable values(%s,%s,%s)"
-            data = (namevalue,uservalue,passvalue)
+            sql = "insert into project2 values(%s,%s,%s,%s,%s,%s)"
+            data = (rollvalue,namevalue,agevalue,gendervalue,mailvalue,contactvalue)
             mycursor.execute(sql,data)
             mydb.commit()
             
@@ -213,29 +217,32 @@ def regwindow():
                 
     titleLabel = Label(regwindow, text="Student Registration Form",width=20,font=("bold", 20),fg="red").place(x=50,y=33)        
     namelabel = Label(regwindow,text="Full Name",width=20,font=("bold",10)).grid(row=0,column=0,padx=(20,0),pady=(100,5))
-    userlabel = Label(regwindow,text="Username",width=20,font=("bold",10)).grid(row=1,column=0,padx=(20,0),pady=(20,20))
-    passlabel = Label(regwindow,text="Password",width=20,font=("bold",10)).grid(row=2,column=0,padx=(20,0),pady=(10,20)) 
-    agelabel = Label(regwindow,text="Age",width=20,font=("bold",10)).grid(row=3,column=0,padx=(20,0),pady=(15,20)) 
+    rolllabel = Label(regwindow,text="Roll number",width=20,font=("bold",10)).grid(row=1,column=0,padx=(20,0),pady=(20,20))
+    agelabel = Label(regwindow,text="Age",width=20,font=("bold",10)).grid(row=2,column=0,padx=(20,0),pady=(10,20)) 
+    contactlabel = Label(regwindow,text="Contact",width=20,font=("bold",10)).grid(row=3,column=0,padx=(20,0),pady=(15,20)) 
     genderlabel = Label(regwindow,text="Gender",width=20,font=("bold",10)).grid(row=4,column=0,padx=(0,0),pady=(10,20))
-    var = StringVar(regwindow) 
-    Radiobutton(regwindow, text="Male",value="Male",variable=var).place(x=200,y=320) 
-    Radiobutton(regwindow, text="Female",value="Female",variable=var).place(x=300,y=320)
-    gendervalue = var.get()
+    # def selection():
+    #     value = var.get()
+    #     gendervalue.config(text=value)
+    # var = StringVar(regwindow)
+    # Radiobutton(regwindow, text="Male",variable=var,value="Male", command=selection).place(x=200,y=320) 
+    # Radiobutton(regwindow, text="Female",variable=var,value="Female", command=selection).place(x=300,y=320)
     
     maillabel = Label(regwindow,text="Email").grid(row=5,column=0,padx=(20,0)) 
     
-    
     nameentry = Entry(regwindow)
     nameentry.grid(row=0,column=1,pady=(100,10))
-    userentry = Entry(regwindow)
-    userentry.grid(row=1,column=1,pady=(5,0))
-    passentry = Entry(regwindow,show="*")
-    passentry.grid(row=2,column=1)
+    rollentry = Entry(regwindow,show="*")
+    rollentry.grid(row=1,column=1,pady=(5,0))
     ageentry = Entry(regwindow)
-    ageentry.grid(row=3,column=1)
+    ageentry.grid(row=2,column=1)
+    contactentry = Entry(regwindow)
+    contactentry.grid(row=3,column=1)
+    genderentry = Entry(regwindow)
+    genderentry.grid(row=4,column=1)
     mailentry = Entry(regwindow)
     mailentry.grid(row=5,column=1,pady=(5,0))
-    
+    # gendervalue = Label(regwindow)     
     
     submitbtn = Button(regwindow,text="Submit",width=10,bg='brown',fg='white',command=lambda:[regdetails()]).grid(row=6,column=1,pady=(25,20))       
 
@@ -254,35 +261,34 @@ def logwindow():
     logwindow.bind('<Return>',lambda event: [log_details()] )  
 
     def log_details():
-        uservalue = userentry.get()
-        passvalue = passentry.get()
+        rollvalue = rollentry.get()
+        namevalue = nameentry.get()
         
         def studentwindow():
             studentwindow = Toplevel(root)
             studentwindow.title("Student Details")
-            studentwindow.geometry("300x300")
+            studentwindow.geometry("650x100")
             logo = PhotoImage(file="logo.png")
             studentwindow.iconphoto(False,logo)
-            
+            titleLabel = Label(studentwindow, text="Student Details",width=20,font=("bold", 10),fg="red").place(x=10,y=13)        
+
             
             def show():
-                mydb = mysql.connector.connect(host="localhost",user="root",password="password",database="homedb")        
+                mydb = mysql.connector.connect(host="localhost",user="root",password="password",database="projectdb")        
                 mycursor=mydb.cursor()
-                mycursor.execute("Select * from hometable where Password='"+passentry.get()+"'")
+                mycursor.execute("Select * from project2 where rollNo='"+rollentry.get()+"'")
                 # mycursor.execute("Select * from hometable")
                 result = mycursor.fetchall()
                 list.delete(0,list.size())
                 for row in result:
-                    # default = "Name" + '        ' + "UserName" + '          ' + "Password"
-                    # list.insert(list.size,default)
-                    insertData = str(row[0]) + '        ' + row[1] + '        ' + str(row[2])
-                    list.insert(list.size()+1,insertData)
+                    insertData = str(row[0]) + '      ' + row[1] + '        ' + str(row[2]) + '      ' + row[3] + '      ' + row[4] + '      ' + str(row[5]) 
+                    list.insert(list.size()+1,insertData+'\n')
             
             list = Listbox(studentwindow)
-            list.place(x=30, y=30, width=230)
+            list.place(x=5, y=40, width=700)
             show()
     
-        if(uservalue=="" or passvalue==""):
+        if(rollvalue=="" or namevalue==""):
             tmsg.showinfo("Insert Status","All Fields are Required to be filled")
         else:
             studentwindow()
@@ -304,13 +310,13 @@ def logwindow():
     # uservalue = StringVar
     # passvalue = StringVar
         
-    userlabel = Label(logwindow,text="Username").grid(row=0,column=0,padx=(20,0),pady=(100,0))
-    passlabel = Label(logwindow,text="Password").grid(row=1,column=0,padx=(20,0),pady=(0,0))
+    rolllabel = Label(logwindow,text="Roll No").grid(row=0,column=0,padx=(20,0),pady=(100,0))
+    namelabel = Label(logwindow,text="Name").grid(row=1,column=0,padx=(20,0),pady=(0,0))
     
-    userentry = Entry(logwindow)
-    userentry.grid(row=0,column=1,pady=(100,10))
-    passentry = Entry(logwindow,show="*")
-    passentry.grid(row=1,column=1,pady=(0,10))
+    rollentry = Entry(logwindow,show="*")
+    rollentry.grid(row=0,column=1,pady=(100,10))
+    nameentry = Entry(logwindow)
+    nameentry.grid(row=1,column=1,pady=(0,10))
     
     image = Image.open("homeimage.png")
     photo = ImageTk.PhotoImage(image)
